@@ -1,0 +1,76 @@
+#version: '3.1'
+services:
+  # The Redis message broker
+  redis:
+    image: redis:6-alpine
+    container_name: dapr-pubsub-redis
+    ports:
+      - "6379:6379"
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+      - "9412:9412"
+    container_name: zipkin-tracing
+
+  # Dapr sidecar for the Order Service
+  dapr-order-sidecar:
+    image: "daprio/daprd:latest"
+    container_name: dapr-order-sidecar
+    command: [ "./daprd", "-app-id", "order-service", "-app-port", "3000", "-app-protocol", "http", "-dapr-http-port", "3500", "-components-path", "/components", "-config", "/components/config-tracing.yaml" ]
+    volumes:
+      - ./components:/components
+    restart: always
+    # Expose the Dapr HTTP port to the host
+    ports:
+      - "3500:3500"
+    # Because of the conflict between the PORTS and the network_mode, we have to expose the Dapr sidecar ports to the host
+    depends_on:
+      - redis
+      - zipkin # Dapr depends on Zipkin
+
+  # The Order Service (Publisher)
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    restart: always
+    environment:
+      - PORT=3000
+    network_mode: "service:dapr-order-sidecar"
+    # The application service depends on its sidecar
+    depends_on:
+      - dapr-order-sidecar
+
+  # Dapr sidecar for the Shipping Service
+  dapr-shipping-sidecar:
+    image: "daprio/daprd:latest"
+    container_name: dapr-shipping-sidecar
+    command: [ "./daprd", "-app-id", "shipping-service", "-app-port", "3001", "-app-protocol", "http", "-dapr-http-port", "3501", "-components-path", "/components", "-config", "/components/config-tracing.yaml" ]
+    volumes:
+      - ./components:/components
+    restart: always
+    # Expose the Dapr HTTP port to the host
+    ports:
+      - "3501:3501"
+    # Because of the conflict between the PORTS and the network_mode, we have to expose the Dapr sidecar ports to the host
+    depends_on:
+      - redis
+      - zipkin # Dapr depends on Zipkin
+
+  # The Shipping Service (Subscriber)
+  shipping-service:
+    build:
+      context: ./shipping-service
+      dockerfile: Dockerfile
+    container_name: shipping-service
+    restart: always
+    environment:
+      - PORT=3001
+    network_mode: "service:dapr-shipping-sidecar"
+    # The application service depends on its sidecar
+    depends_on:
+      - dapr-shipping-sidecar
+
