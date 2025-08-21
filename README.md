@@ -8,13 +8,22 @@
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
 
 
+## Project structure:
+   order-service/       # NestJs service
+   shipping-service/    # NestJs service
+   scripts/deploy.sh    # build, push & deploy script
+   docker-compose.yml   # For running the containers Locally 
+   package-lock.json
+   package.json
+   README.md
+
+
 ## Steps to configure & run LOCALLY with docker-compose.yml
 
 Docker Compose command to build & run the containers: 
 ```bash
 $ docker-compose up --build -d
 ```
-
 
 Monitor the REDIS messages on the QUEUES
 ```bash
@@ -48,23 +57,14 @@ docker rm order-service shipping-service dapr-order-sidecar dapr-shipping-sideca
 
 
 
-## Steps to Run LOCALLY Dapr components - Manually
+## Steps to Run project in Cloud with ACA Dapr components 
 
-
-Start Redis (Message Broker)
-
+Login to Azure 
 ```bash
-docker run --name dapr-pubsub-redis -p 6379:6379 -d redis/redis:6-alpine
+az login
 ```
 
-Run the Shipping Service (Subscriber) with Dapr
-Open a new terminal and run the Shipping Service with its Dapr sidecar.
+Run the deploy script
 ```bash
-$ dapr run --app-id shipping-service --app-port 3001 --dapr-http-port 3501 --resources-path ./components -- nest start --prefix shipping-service
-```
-
-Run the Order Service (Publisher) with Dapr
-Open another terminal and run the Order Service.
-```bash
-$ dapr run --app-id order-service --app-port 3000 --dapr-http-port 3500 --resources-path ./components -- nest start --prefix order-service
+bash script/deploy.sh
 ```
