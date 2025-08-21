@@ -9,6 +9,7 @@
 
 
 ## Project structure:
+```
    order-service/       # NestJs service
    shipping-service/    # NestJs service
    scripts/deploy.sh    # build, push & deploy script
@@ -16,9 +17,22 @@
    package-lock.json
    package.json
    README.md
+```
+
+## 1. Steps to Run project in Cloud with ACA Dapr components 
+
+Login to Azure 
+```bash
+az login
+```
+
+Run the deploy script
+```bash
+bash script/deploy.sh
+```
 
 
-## Steps to configure & run LOCALLY with docker-compose.yml
+## 2. Steps to configure & run LOCALLY with docker-compose.yml
 
 Docker Compose command to build & run the containers: 
 ```bash
@@ -57,14 +71,4 @@ docker rm order-service shipping-service dapr-order-sidecar dapr-shipping-sideca
 
 
 
-## Steps to Run project in Cloud with ACA Dapr components 
 
-Login to Azure 
-```bash
-az login
-```
-
-Run the deploy script
-```bash
-bash script/deploy.sh
-```
