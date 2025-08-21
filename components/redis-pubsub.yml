@@ -1,0 +1,12 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: order-pubsub # This name will be used in our NestJS code to reference this pub/sub component
+spec:
+  type: pubsub.redis # Specifies that we are using Redis as the pub/sub component
+  version: v1
+  metadata:
+    - name: redisHost
+      value: redis:6379 # The Docker service name is 'redis'
+    - name: redisPassword
+      value: ""
