@@ -12,6 +12,10 @@
 ```
    order-service/       # NestJs service
    shipping-service/    # NestJs service
+   components/
+      redis-pubsub.yml  # Redis PubSub
+      config-tracing.yaml # ZipKin config for distributed tracing
+      resiliency.yaml   # Retry forever and circuit breaker
    scripts/deploy.sh    # build, push & deploy script
    docker-compose.yml   # For running the containers Locally 
    package-lock.json
