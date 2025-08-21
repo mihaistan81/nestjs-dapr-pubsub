@@ -6,44 +6,50 @@
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## Steps to configure & run LOCALLY with docker-compose.yml
 
+Docker Compose command to build & run the containers: 
 ```bash
-$ npm install
+$ docker-compose up --build -d
 ```
 
-## Compile and run the project
+
+Monitor the REDIS messages on the QUEUES
+```bash
+$ winpty docker exec -it dapr-pubsub-redis redis-cli
+```
+And then type MONITOR
+
+Test the Communication
+Send a request to the Order Service to trigger the pub/sub flow.
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ curl -X POST -H "Content-Type: application/json" -d '{"orderId": "333", "item": "Laptop", "quantity": 6}' http://localhost:3500/v1.0/invoke/order-service/method/orders/create
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+Docker Compose commands to see the containers LOGS: 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+$ docker-compose logs -f
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Docker Compose commands to put down the containers: 
+```bash
+$ docker-compose down
+```
+
+Docker Clean Up commands: 
+```bash
+docker stop order-service shipping-service dapr-order-sidecar dapr-shipping-sidecar dapr-pubsub-redis zipkin
+docker rm order-service shipping-service dapr-order-sidecar dapr-shipping-sidecar dapr-pubsub-redis zipkin
+```
 
 
-## Steps
+
+
+## Steps to Run LOCALLY Dapr components - Manually
+
 
 Start Redis (Message Broker)
 
@@ -61,30 +67,4 @@ Run the Order Service (Publisher) with Dapr
 Open another terminal and run the Order Service.
 ```bash
 $ dapr run --app-id order-service --app-port 3000 --dapr-http-port 3500 --resources-path ./components -- nest start --prefix order-service
-```
-
-Test the Communication
-Send a request to the Order Service to trigger the pub/sub flow.
-
-```bash
-$ curl -X POST -H "Content-Type: application/json" -d '{"orderId": "333", "item": "Laptop", "quantity": 6}' http://localhost:3500/v1.0/invoke/order-service/method/orders/create
-```
-
-Monitor the REDIS messages on the QUEUES
-```bash
-$ winpty docker exec -it dapr-pubsub-redis redis-cli
-```
-And then type MONITOR
-
-Docker Compose commands: 
-```bash
-$ docker-compose up --build -d
-$ docker-compose down
-$ docker-compose logs -f
-```
-
-Docker Clean Up commands: 
-```bash
-docker stop order-service shipping-service dapr-order-sidecar dapr-shipping-sidecar dapr-pubsub-redis zipkin
-docker rm order-service shipping-service dapr-order-sidecar dapr-shipping-sidecar dapr-pubsub-redis zipkin
 ```
