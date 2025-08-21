@@ -1,0 +1,9 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: app-config
+spec:
+  tracing:
+    samplingRate: "1.0" # A value between 0.0 and 1.0. 1.0 means all traces are sampled.
+    otel:
+      endpointAddress: "zipkin:9411" # The URL of your Zipkin server
