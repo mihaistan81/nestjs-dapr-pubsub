@@ -6,7 +6,7 @@ ROOT_DIR=$(dirname "$(realpath "$0")")
 # ==== CONFIG ====
 RESOURCE_GROUP=${RESOURCE_GROUP:-nestjs-dapr-rg}
 LOCATION=${LOCATION:-eastus2}
-ACR_NAME=${ACR_NAME:-dapracr$RANDOM} # "dapracr24996"
+ACR_NAME="dapracr24996" # ${ACR_NAME:-dapracr$RANDOM}
 ENVIRONMENT=${ENVIRONMENT:-nestjs-dapr-env}
 REDIS_NAME=${REDIS_NAME:-nestjsdaprredis}
 ORDER_SERVICE_APP=${ORDER_SERVICE_APP:-order-service}
@@ -122,7 +122,7 @@ REDIS_HOSTNAME=$(az redis show \
 
 echo "Redis Name: $REDIS_NAME"
 echo "Redis Hostname: $REDIS_HOSTNAME"
-echo "Redis Key: $REDIS_KEY"
+echo "Redis Key: $REDIS_KEY" # vTKdrWWFLRlxd6MG3dRiQhTADd15Ykb0dAzCaCxWssc=
 
 # --- Create Dapr Pub/Sub Component ---
 echo "Creating Dapr pub/sub component 'order-pubsub' for Redis..."
@@ -133,6 +133,10 @@ az containerapp env dapr-component set \
   --resource-group $RESOURCE_GROUP \
   --dapr-component-name $DAPR_PUBSUB_COMPONENT_NAME \
   --yaml "./components/dapr-pubsub-component.yaml" \
+#   --component-type "pubsub.redis" \
+#   --version "v1" \
+#   --secret "redis-password=$REDIS_KEY" \
+#   --metadata "redisHost=$REDIS_HOSTNAME:6379" "redisPassword=redis-password" "enableTLS=true"
 
 echo "Logging in to Azure Container Registry..."
 az acr login --name $ACR_NAME --expose-token
@@ -156,6 +160,7 @@ az containerapp create \
   --enable-dapr \
   --dapr-app-id $ORDER_SERVICE_APP \
   --dapr-app-port 3000 \
+  --min-replicas 1 \
   --query "properties.configuration.ingress.fqdn" \
   --output tsv
 
@@ -166,12 +171,12 @@ az containerapp create \
   --resource-group $RESOURCE_GROUP \
   --environment $ENVIRONMENT \
   --image $SHIPPING_SERVICE_IMAGE \
-  --target-port 3001 \
+  --target-port 3000 \
   --registry-server $ACR_NAME.azurecr.io \
   --ingress internal \
   --enable-dapr \
   --dapr-app-id $SHIPPING_SERVICE_APP \
-  --dapr-app-port 3001 \
+  --dapr-app-port 3000 \
   --min-replicas 1
 
 echo "Checking the subscriber logs:"
