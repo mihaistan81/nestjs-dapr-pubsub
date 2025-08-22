@@ -6,7 +6,7 @@ ROOT_DIR=$(dirname "$(realpath "$0")")
 # ==== CONFIG ====
 RESOURCE_GROUP=${RESOURCE_GROUP:-nestjs-dapr-rg}
 LOCATION=${LOCATION:-eastus2}
-ACR_NAME="dapracr24996" # ${ACR_NAME:-dapracr$RANDOM}
+ACR_NAME=${ACR_NAME:-dapracr$RANDOM} # "dapracr24996"
 ENVIRONMENT=${ENVIRONMENT:-nestjs-dapr-env}
 REDIS_NAME=${REDIS_NAME:-nestjsdaprredis}
 ORDER_SERVICE_APP=${ORDER_SERVICE_APP:-order-service}
@@ -84,8 +84,8 @@ echo "Log Analytics Primary Key: $WORKSPACE_KEY"
 # Create a Container Apps environment
 az containerapp env create -g "$RESOURCE_GROUP" -n "$ENVIRONMENT" -l "$LOCATION" --logs-workspace-id "$WORKSPACE_ID" --logs-workspace-key "$WORKSPACE_KEY"
 
-REDIS_NAME="dapr-redis-32746" # "dapr-redis-$RANDOM"
-REDIS_SKU="Basic"
+REDIS_NAME="dapr-redis-32747" # "dapr-redis-$RANDOM"
+REDIS_SKU="Basic" #"Standard"
 REDIS_SIZE="C1"
 
 # Create the Redis instance
@@ -122,7 +122,7 @@ REDIS_HOSTNAME=$(az redis show \
 
 echo "Redis Name: $REDIS_NAME"
 echo "Redis Hostname: $REDIS_HOSTNAME"
-echo "Redis Key: $REDIS_KEY" # DAVzPDLhxJR5GzRupz5klSOnu4Rgt1dVoAzCaCFnOow=
+echo "Redis Key: $REDIS_KEY"
 
 # --- Create Dapr Pub/Sub Component ---
 echo "Creating Dapr pub/sub component 'order-pubsub' for Redis..."
@@ -133,10 +133,6 @@ az containerapp env dapr-component set \
   --resource-group $RESOURCE_GROUP \
   --dapr-component-name $DAPR_PUBSUB_COMPONENT_NAME \
   --yaml "./components/dapr-pubsub-component.yaml" \
-#   --component-type "pubsub.redis" \
-#   --version "v1" \
-#   --secret "redis-password=$REDIS_KEY" \
-#   --metadata "redisHost=$REDIS_HOSTNAME:6379" "redisPassword=redis-password" "enableTLS=true"
 
 echo "Logging in to Azure Container Registry..."
 az acr login --name $ACR_NAME --expose-token
@@ -160,7 +156,6 @@ az containerapp create \
   --enable-dapr \
   --dapr-app-id $ORDER_SERVICE_APP \
   --dapr-app-port 3000 \
-#   --min-replicas 1 \
   --query "properties.configuration.ingress.fqdn" \
   --output tsv
 
@@ -180,4 +175,4 @@ az containerapp create \
   --min-replicas 1
 
 echo "Checking the subscriber logs:"
-echo "    az containerapp logs show -g $RESOURCE_GROUP -n $SHIPPING_SERVICE_APP --follow --type console"
+echo "    az containerapp logs show -n $SHIPPING_SERVICE_APP  -g $RESOURCE_GROUP --follow --type console"
