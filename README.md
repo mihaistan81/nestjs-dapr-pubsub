@@ -43,10 +43,16 @@ Container app created. Access your app at https://order-service.ashyriver-741d3c
 Container app created. Access your app at https://shipping-service.internal.ashyriver-741d3c87.eastus2.azurecontainerapps.io/
 
 shipping-service.internal.ashyriver-741d3c87.eastus2.azurecontainerapps.io
-Checking the subscriber logs:
-    az containerapp logs show -g nestjs-dapr-rg -n shipping-service --follow --type console
 
+**Checking the subscriber logs:**
+```
+    az containerapp logs show -g nestjs-dapr-rg -n shipping-service --follow --type console
+```
+
+**Run a POST api call:**
+```
 curl -X POST -H "Content-Type: application/json" -d '{"orderId": "333", "item": "Laptop", "quantity": 6}' https://order-service.ashyriver-741d3c87.eastus2.azurecontainerapps.io/v1.0/invoke/order-service/method/orders/create
+```
 
 
 
