@@ -99,7 +99,7 @@ Target: dapr-redis-32746
 Additional Information:Type: PolicyViolation
 ```
 
-** AI response: **
+**AI response:**
 ```
 This error message means that an Azure Policy in your subscription is preventing you from creating an Azure Cache for Redis instance. The policy is named AzureB2C_denyHDInsightPolicy, but it's incorrectly configured to also block the Redis resource type.
 
