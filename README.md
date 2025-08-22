@@ -38,11 +38,9 @@ bash script/deploy.sh
 ```
 
 ### Results from the deployment run
-Container app created. Access your app at https://order-service.ashyriver-741d3c87.eastus2.azurecontainerapps.io/
+Container app created. Access your app at https://order-service.proudforest-90804308.eastus2.azurecontainerapps.io/
 
-Container app created. Access your app at https://shipping-service.internal.ashyriver-741d3c87.eastus2.azurecontainerapps.io/
-
-shipping-service.internal.ashyriver-741d3c87.eastus2.azurecontainerapps.io
+Container app created. Access your app at https://shipping-service.internal.proudforest-90804308.eastus2.azurecontainerapps.io/
 
 **Checking the subscriber logs:**
 ```
@@ -51,7 +49,7 @@ shipping-service.internal.ashyriver-741d3c87.eastus2.azurecontainerapps.io
 
 **Run a POST api call:**
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"orderId": "333", "item": "Laptop", "quantity": 6}' https://order-service.ashyriver-741d3c87.eastus2.azurecontainerapps.io/v1.0/invoke/order-service/method/orders/create
+curl -X POST -H "Content-Type: application/json" -d '{"orderId": "333", "item": "Laptop", "quantity": 6}' https://order-service.proudforest-90804308.eastus2.azurecontainerapps.io/orders/create
 ```
 
 
