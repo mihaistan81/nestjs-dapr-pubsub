@@ -1,0 +1,14 @@
+componentType: pubsub.redis
+version: v1
+metadata:
+- name: redisHost
+  value: "$REDIS_HOSTNAME:6379"
+- name: redisPassword
+  value: "$REDIS_KEY"
+- name: enableTLS
+  value: true
+auth:
+  secretStore: ""
+scopes:
+- order-service
+- shipping-service
